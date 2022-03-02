@@ -1,0 +1,277 @@
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.4.22 < 0.9.0;
+
+contract HospitalAdmin {
+
+    address private hospitalAdmin;
+    address private pAddr;
+    address private dAddr;
+    address private cAddr;
+    address private lAddr;
+
+    struct patient {
+
+        uint256 pID;
+        //uint256 price;
+        uint256 approved;
+        string pName;
+        string date;
+        string docName;
+        bool isValue;
+        address pAddr;
+        address aAddr;
+        mapping (address => uint256) signatures;
+    }
+    
+    struct doctor {
+
+        uint256 dID;
+        uint256 approved;
+        string dName;
+        string specialization;
+        string dQualification;
+        bool isValue;
+        address dAddr;
+        address aAddr;
+        mapping (address => uint256) signatures;
+    }
+
+      struct chemist {
+
+        uint256 cID;
+        uint256 approved;
+        string cName;
+        string cQualification;
+        bool isValue;
+        address cAddr;
+        address aAddr;
+        mapping (address => uint256) signatures;
+    }
+
+struct labAdmin {
+
+        uint256 lID;
+        uint256 approved;
+        string lName;
+        string lQualification;
+        bool isValue;
+        address lAddr;
+        address aAddr;
+        mapping (address => uint256) signatures;
+    }
+
+ struct insuranceCompany {
+        uint256 insuID;
+        string iName ;
+        uint iphoneno;
+        
+    }
+
+    modifier signOnly {
+        require (msg.sender == pAddr);
+        _;
+    }
+    modifier signOnly1 {
+        require (msg.sender == dAddr);
+        _;
+    }
+
+    modifier signOnly2 {
+        require (msg.sender == cAddr);
+        _;
+    }
+
+    modifier signOnly3 {
+        require (msg.sender == lAddr);
+        _;
+    }
+
+    constructor() public {
+        hospitalAdmin = msg.sender;
+        pAddr=0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2;
+        dAddr=0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db;
+        cAddr=0x78731D3Ca6b7E34aC0F824c42a7cC18A495cabaB;
+        lAddr=0x617F2E2fD72FD9D5503197092aC168c91465E7f2;
+
+             //assigning a hard coded address from ganache                   
+    }
+    
+    
+    // Mapping to store records
+    mapping (uint256=> patient) public precords;
+  //  uint256[] public recordsArr;
+    mapping (uint256=> doctor) public drecords;
+  //  uint256[] public drecordsArr;   
+    mapping (uint256=> chemist) public crecords;
+   // uint256[] public crecordsArr; 
+     mapping (uint256=> labAdmin) public lrecords;
+   // uint256[] public lrecordsArr;   
+    mapping (uint256 => insuranceCompany) public irecords;
+   // uint256[] public irecordsArr;
+
+    event recordCreated(uint256 pID, string pName, string date, string docName, address pAddr);
+    event recordSigned(uint256 pID, string pName, string date, string docName);
+    
+    event recordCreated1(uint256 dID, string dName, string specialization, string dQualification);
+    event recordSigned1(uint256 dID, string dName, string specialization, string dQualification);
+
+    event recordCreated2(uint256 cID, string cName, string cQualification);
+    event recordSigned2(uint256 cID, string cName, string cQualification);
+
+    event recordCreated3(uint256 lID, string lName, string lQualification);
+    event recordSigned3(uint256 lID, string lName, string lQualification);
+
+        // Create new record
+    function addPatient (uint256 pID, string memory pName, string memory date, string memory docName) public{
+        patient storage newrecord = precords[pID];
+
+        // Only allows new records to be created
+        require(!precords[pID].isValue);
+            newrecord.aAddr = msg.sender;
+            newrecord.pID = pID;
+            newrecord.pName = pName;
+            newrecord.date = date;
+            newrecord.docName = docName;
+            newrecord.isValue = true;
+            newrecord.pAddr = pAddr;
+
+            newrecord.approved = 0;
+
+        //recordsArr.push(pID);
+        emit  recordCreated(newrecord.pID, pName, date, docName, pAddr);
+    }
+
+    function addDoctor (uint256 dID, string memory dName, string memory specialization, string memory dQualification) public{
+        doctor storage newrecord = drecords[dID];
+
+        // Only allows new records to be created
+        require(!drecords[dID].isValue);
+            newrecord.aAddr = msg.sender;
+            newrecord.dID = dID;
+            newrecord.dName = dName;
+            newrecord.specialization = specialization;
+            newrecord.dQualification = dQualification;
+            newrecord.isValue = true;
+            newrecord.dAddr = dAddr;
+
+            newrecord.approved = 0;
+
+        //drecordsArr.push(dID);
+        emit  recordCreated1(newrecord.dID, dName, specialization, dQualification);
+    }
+
+   function addchemist (uint256 cID, string memory cName, string memory cQualification) public{
+        chemist storage newrecord = crecords[cID];
+
+        // Only allows new records to be created
+        require(!crecords[cID].isValue);
+            newrecord.aAddr = msg.sender;
+            newrecord.cID = cID;
+            newrecord.cName = cName;
+            newrecord.cQualification = cQualification;
+            newrecord.isValue = true;
+            newrecord.cAddr = cAddr;
+            newrecord.approved = 0;
+
+        //crecordsArr.push(cID);
+        emit  recordCreated2(newrecord.cID, cName, cQualification);
+    }
+
+    function addlabAdmin (uint256 lID, string memory lName, string memory lQualification) public{
+        labAdmin storage newrecord = lrecords[lID];
+
+        // Only allows new records to be created
+        require(!lrecords[lID].isValue);
+            newrecord.aAddr = msg.sender;
+            newrecord.lID = lID;
+            newrecord.lName = lName;
+            newrecord.lQualification = lQualification;
+            newrecord.isValue = true;
+            newrecord.lAddr = lAddr;
+            newrecord.approved = 0;
+
+        //lrecordsArr.push(lID);
+        emit  recordCreated3(newrecord.lID, lName, lQualification);
+    }
+
+        
+    // Function to sign a record 
+    function signPatientRecord(uint256 pID) signOnly public {
+        patient storage records = precords[pID];
+        
+                // Checks the aunthenticity of the address signing it
+        
+        require(msg.sender == 0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2);
+        
+        // Doesn't allow the same person to sign twice
+        require(records.signatures[msg.sender] != 1);
+
+        records.signatures[msg.sender] = 1;
+        records.approved++;
+
+        // Checks if the record has been signed by both the authorities to process insurance claim
+        if(records.approved == 1)
+            emit  recordSigned(records.pID, records.pName, records.date, records.docName);
+
+    }
+        function signDoctorRecord(uint256 dID) signOnly1 public {
+        doctor storage _drecords = drecords[dID];
+         // Checks the aunthenticity of the address signing it
+        
+        require(msg.sender == _drecords.dAddr);
+        
+        // Doesn't allow the same person to sign twice
+        require(_drecords.signatures[msg.sender] != 1);
+
+        _drecords.signatures[msg.sender] = 1;
+        _drecords.approved++;
+
+        // Checks if the record has been signed by both the authorities to process insurance claim
+        if(_drecords.approved == 1)
+            emit  recordSigned1(_drecords.dID, _drecords.dName, _drecords.specialization, _drecords.dQualification);
+
+    }
+    function signChemistRecord(uint256 cID) signOnly2 public {
+        chemist storage _crecords = crecords[cID];
+         // Checks the aunthenticity of the address signing it
+      
+        require(msg.sender == _crecords.cAddr);
+        
+        // Doesn't allow the same person to sign twice
+        require(_crecords.signatures[msg.sender] != 1);
+
+        _crecords.signatures[msg.sender] = 1;
+        _crecords.approved++;
+
+        // Checks if the record has been signed by both the authorities to process insurance claim
+        if(_crecords.approved == 1)
+            emit  recordSigned2(_crecords.cID, _crecords.cName, _crecords.cQualification);
+
+    }
+    function signLabAdminRecord(uint256 lID) signOnly3 public {
+        labAdmin storage _lrecords = lrecords[lID];
+         // Checks the aunthenticity of the address signing it
+        
+        require(msg.sender == _lrecords.lAddr);
+        
+        // Doesn't allow the same person to sign twice
+        require(_lrecords.signatures[msg.sender] != 1);
+
+        _lrecords.signatures[msg.sender] = 1;
+        _lrecords.approved++;
+
+        // Checks if the record has been signed by both the authorities to process insurance claim
+        if(_lrecords.approved == 1)
+            emit  recordSigned3(_lrecords.lID, _lrecords.lName, _lrecords.lQualification);
+
+    }
+
+    function getDoctorDetails(uint256 dID1) public view returns (uint256 dID, string memory dName, string memory specialization, string memory dQualification){
+        
+        require (msg.sender == 0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2 || msg.sender == 0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db );
+        return( drecords[dID1].dID,drecords[dID1].dName,drecords[dID1].specialization,drecords[dID1].dQualification);
+    }
+  
+
+
+}
